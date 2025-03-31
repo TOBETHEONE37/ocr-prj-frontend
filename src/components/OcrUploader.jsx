@@ -23,7 +23,7 @@ export default function OcrUploader() {
     setResult('');
 
     try {
-      const response = await axios.post('http://localhost:5000/upload', formData, {
+      const response = await axios.post('https://my-backend-production.up.railway.app/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
