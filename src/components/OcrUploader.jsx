@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 export default function OcrUploader() {
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<{ original: string; translated: string } | null>(null);
+  const [result, setResult] = useState<{ original: string, translated: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async () => {
