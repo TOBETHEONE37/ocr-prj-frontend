@@ -1,63 +1,52 @@
 'use client';
 import { useState } from 'react';
-import axios from 'axios';
 
 export default function OcrUploader() {
-  const [file, setFile] = useState(null);
-  const [result, setResult] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [result, setResult] = useState<{ original: string; translated: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handleSubmit = async () => {
-    if (!file) {
-      alert('파일을 선택해주세요.');
-      return;
-    }
+  const handleUpload = async () => {
+    if (!file) return;
 
     const formData = new FormData();
     formData.append('image', file);
     setLoading(true);
-    setResult('');
+    setResult(null);
 
     try {
-      const response = await axios.post('https://my-backend-production.up.railway.app/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const res = await fetch('https://my-backend-production.up.railway.app/upload', {
+        method: 'POST',
+        body: formData,
       });
-
-      setResult(response.data.text);
-    } catch (error) {
-      console.error(error);
-      alert('서버에서 OCR 처리 중 오류가 발생했습니다.');
+      const data = await res.json();
+      setResult(data);
+    } catch (e) {
+      console.error(e);
+      alert('OCR 처리 시 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-2xl p-6 bg-white rounded-lg shadow-md">
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="mb-4 block w-full text-sm text-gray-700"
-      />
+    <div className="w-full max-w-xl bg-white p-4 shadow rounded">
+      <input type="file" accept="image/*" onChange={e => setFile(e.target.files?.[0] || null)} />
       <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
+        onClick={handleUpload}
+        disabled={loading || !file}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
-        {loading ? '분석 중...' : 'OCR 분석하기'}
+        {loading ? '처리 중...' : 'OCR & 번역 시작'}
       </button>
 
       {result && (
-        <div className="mt-6 p-4 border rounded">
-          <h2 className="text-lg font-semibold mb-2">OCR 추출 결과</h2>
-          <pre className="whitespace-pre-wrap text-gray-700">{result}</pre>
+        <div className="mt-6">
+          <h2 className="text-lg font-bold mb-2">📜 OCR 결과 (원문)</h2>
+          <pre className="bg-gray-100 p-2 rounded whitespace-pre-wrap">{result.original}</pre>
+
+          <h2 className="text-lg font-bold mt-4 mb-2">🈶 GPT 번역</h2>
+          <pre className="bg-gray-100 p-2 rounded whitespace-pre-wrap">{result.translated}</pre>
         </div>
       )}
     </div>
