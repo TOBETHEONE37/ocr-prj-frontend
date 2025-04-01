@@ -42,10 +42,10 @@ export default function OcrUploader() {
 
       {result && (
         <div className="mt-6">
-          <h2 className="text-lg font-bold mb-2">📜 OCR 결과 (원문)</h2>
+          <h2 className="text-lg font-bold mb-2"> OCR 결과 (원문)</h2>
           <pre className="bg-gray-100 p-2 rounded whitespace-pre-wrap">{result.original}</pre>
 
-          <h2 className="text-lg font-bold mt-4 mb-2">🈶 GPT 번역</h2>
+          <h2 className="text-lg font-bold mt-4 mb-2"> GPT 번역</h2>
           <pre className="bg-gray-100 p-2 rounded whitespace-pre-wrap">{result.translated}</pre>
         </div>
       )}
